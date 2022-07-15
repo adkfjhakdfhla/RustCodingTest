@@ -1,0 +1,12 @@
+[package]
+name = "transaction_processor"
+version = "0.1.0"
+authors = ["Theodore Bugnet <theodore@bug.net>"]
+edition = "2018"
+
+[dependencies]
+csv = "1.1"
+serde = { version = "1", features = ["derive"] }
+thiserror = "1.0"
+async-trait = "0.1.56"
+tokio = { version = "1", features = ["rt", "macros"] }
