@@ -56,9 +56,10 @@ impl Processor for DepositProcessor {
             return Err(ProcessorError::TransactionExists);
         }
         // PRECONDITION: client must not be locked
-        if maybe_client.is_some_with(|client| client.locked) {
-            return Err(ProcessorError::ClientLocked);
-        }
+        match maybe_client {
+            Some(client) if client.locked => return Err(ProcessorError::ClientLocked),
+            _ => ()
+        };
         // PRECONDITION: event must have an amount
         let amount = match event.amount {
             None => return Err(ProcessorError::NoAmount),
@@ -259,7 +260,7 @@ mod test {
                 &default_event(EventType::Deposit),
             )
             .await;
-            assert!(result.contains_err(&ProcessorError::TransactionExists));
+            assert!(matches!(result, Err(ProcessorError::TransactionExists)));
         }
 
         #[tokio::test]
@@ -272,7 +273,7 @@ mod test {
                 &default_event(EventType::Deposit),
             )
             .await;
-            assert!(result.contains_err(&ProcessorError::ClientLocked));
+            assert!(matches!(result, Err(ProcessorError::ClientLocked)));
         }
 
         #[tokio::test]
@@ -280,7 +281,7 @@ mod test {
             let mut event = default_event(EventType::Deposit);
             event.amount = None;
             let result = DepositProcessor::process_event(None, None, &event).await;
-            assert!(result.contains_err(&ProcessorError::NoAmount));
+            assert!(matches!(result, Err(ProcessorError::NoAmount)));
         }
 
         #[tokio::test]

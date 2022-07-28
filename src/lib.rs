@@ -1,5 +1,3 @@
-#![feature(map_try_insert, is_some_with, result_contains_err)]
-
 use logger::StderrLogger;
 use runner::{CsvSingleProcessRunner, Runner, RunnerError};
 use store::InMemoryStore;
